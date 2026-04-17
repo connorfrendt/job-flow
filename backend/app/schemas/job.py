@@ -1,7 +1,19 @@
 from datetime import date, datetime
+from enum import Enum
 from typing import List, Optional
 from uuid import UUID
 from pydantic import BaseModel
+
+
+class JobStatus(str, Enum):
+    new_leads    = "new_leads"
+    saved        = "saved"
+    applied      = "applied"
+    phone_screen = "phone_screen"
+    interview    = "interview"
+    offer        = "offer"
+    rejected     = "rejected"
+    archived     = "archived"
 
 
 class FitReason(BaseModel):
@@ -23,7 +35,7 @@ class JobCreate(BaseModel):
     url: Optional[str] = None
     description: Optional[str] = None
     source: str = "manual"
-    status: str = "new_leads"
+    status: JobStatus = JobStatus.new_leads
     notes: Optional[str] = None
     contact_name: Optional[str] = None
     contact_email: Optional[str] = None
@@ -39,7 +51,7 @@ class JobUpdate(BaseModel):
     salary_max: Optional[int] = None
     url: Optional[str] = None
     description: Optional[str] = None
-    status: Optional[str] = None
+    status: Optional[JobStatus] = None
     notes: Optional[str] = None
     contact_name: Optional[str] = None
     contact_email: Optional[str] = None
@@ -48,7 +60,7 @@ class JobUpdate(BaseModel):
 
 
 class StatusUpdate(BaseModel):
-    status: str
+    status: JobStatus
 
 
 class StarUpdate(BaseModel):
