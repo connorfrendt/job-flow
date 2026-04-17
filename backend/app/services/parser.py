@@ -1,0 +1,1 @@
+# Layer 2: Claude API integration for job description parsing

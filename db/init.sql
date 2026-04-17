@@ -1,0 +1,2 @@
+-- Populated in Step 2 with the full schema.
+-- Placeholder so Docker volume mount succeeds on first run.

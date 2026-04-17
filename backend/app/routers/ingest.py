@@ -1,0 +1,1 @@
+# Layer 3: Adzuna ingestion endpoints
