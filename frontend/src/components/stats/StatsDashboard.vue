@@ -1,3 +1,3 @@
 <template>
-  <!-- Layer 5: Stats dashboard -->
+    <!-- Layer 5: Stats dashboard -->
 </template>

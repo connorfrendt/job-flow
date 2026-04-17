@@ -1,3 +1,3 @@
 <template>
-  <!-- Step 4: Kanban board layout -->
+    <!-- Step 4: Kanban board layout -->
 </template>

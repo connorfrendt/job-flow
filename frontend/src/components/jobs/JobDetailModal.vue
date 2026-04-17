@@ -1,3 +1,3 @@
 <template>
-  <!-- Step 6: Job detail modal -->
+    <!-- Step 6: Job detail modal -->
 </template>

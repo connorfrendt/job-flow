@@ -1,3 +1,3 @@
 <template>
-  <!-- Step 8: Profile configuration -->
+    <!-- Step 8: Profile configuration -->
 </template>

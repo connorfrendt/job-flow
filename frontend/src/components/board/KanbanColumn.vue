@@ -1,3 +1,3 @@
 <template>
-  <!-- Step 4: Column component -->
+    <!-- Step 4: Column component -->
 </template>
