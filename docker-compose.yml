@@ -15,7 +15,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://jobflow:jobflow@db:5432/jobflow
+      - DATABASE_URL=postgresql://job_flow:job_flow@db:5432/job_flow
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - ADZUNA_APP_ID=${ADZUNA_APP_ID:-}
       - ADZUNA_APP_KEY=${ADZUNA_APP_KEY:-}
@@ -28,16 +28,16 @@ services:
   db:
     image: postgres:16
     environment:
-      - POSTGRES_USER=jobflow
-      - POSTGRES_PASSWORD=jobflow
-      - POSTGRES_DB=jobflow
+      - POSTGRES_USER=job_flow
+      - POSTGRES_PASSWORD=job_flow
+      - POSTGRES_DB=job_flow
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U jobflow"]
+      test: ["CMD-SHELL", "pg_isready -U job_flow"]
       interval: 5s
       timeout: 5s
       retries: 5
