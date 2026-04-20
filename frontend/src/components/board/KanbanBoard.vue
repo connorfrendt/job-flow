@@ -1,10 +1,12 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useJobStore } from '../../stores/jobStore'
 import { KANBAN_COLUMNS } from '../../utils/constants'
 import KanbanColumn from './KanbanColumn.vue'
+import JobDetailModal from '../jobs/JobDetailModal.vue'
 
 const store = useJobStore()
+const selectedJob = ref(null)
 
 onMounted(() => store.fetchJobs())
 </script>
@@ -32,8 +34,16 @@ onMounted(() => store.fetchJobs())
                     :column="col"
                     :jobs="store.jobsByStatus[col.key] || []"
                     @drop-job="store.updateStatus($event, col.key)"
+                    @select-job="selectedJob = $event"
                 />
             </div>
         </div>
     </main>
+
+    <!-- Job detail modal -->
+    <JobDetailModal
+        v-if="selectedJob"
+        :job="selectedJob"
+        @close="selectedJob = null"
+    />
 </template>

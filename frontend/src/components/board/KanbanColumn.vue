@@ -7,7 +7,7 @@ defineProps({
     jobs:   { type: Array,  required: true },
 })
 
-const emit = defineEmits(['drop-job'])
+const emit = defineEmits(['drop-job', 'select-job'])
 
 const isDragOver = ref(false)
 
@@ -55,6 +55,7 @@ function onDrop(e) {
                 v-for="job in jobs"
                 :key="job.id"
                 :job="job"
+                @select="emit('select-job', $event)"
             />
             <p v-if="jobs.length === 0" class="text-xs text-gray-400 text-center py-4">
                 No jobs here

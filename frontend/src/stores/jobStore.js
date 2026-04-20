@@ -39,6 +39,17 @@ export const useJobStore = defineStore('jobs', () => {
         }
     }
 
+    async function updateJob(id, payload) {
+        const { data } = await api.put(`/jobs/${id}`, payload)
+        const index = jobs.value.findIndex(j => j.id === id)
+        if (index !== -1) jobs.value[index] = data
+    }
+
+    async function deleteJob(id) {
+        await api.delete(`/jobs/${id}`)
+        jobs.value = jobs.value.filter(j => j.id !== id)
+    }
+
     async function updateStatus(id, status) {
         const job = jobs.value.find(j => j.id === id)
         if (!job || job.status === status) return
@@ -63,5 +74,5 @@ export const useJobStore = defineStore('jobs', () => {
         }
     }
 
-    return { jobs, loading, error, searchQuery, jobsByStatus, fetchJobs, updateStatus, toggleStar }
+    return { jobs, loading, error, searchQuery, jobsByStatus, fetchJobs, updateJob, deleteJob, updateStatus, toggleStar }
 })
