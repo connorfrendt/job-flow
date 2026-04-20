@@ -4,9 +4,11 @@ import { useJobStore } from '../../stores/jobStore'
 import { KANBAN_COLUMNS } from '../../utils/constants'
 import KanbanColumn from './KanbanColumn.vue'
 import JobDetailModal from '../jobs/JobDetailModal.vue'
+import AddJobForm from '../jobs/AddJobForm.vue'
 
 const store = useJobStore()
 const selectedJob = ref(null)
+const showAddForm = ref(false)
 
 onMounted(() => store.fetchJobs())
 </script>
@@ -15,6 +17,12 @@ onMounted(() => store.fetchJobs())
     <main class="p-6 flex flex-col gap-4">
         <!-- Toolbar -->
         <div class="flex items-center gap-4">
+            <button
+                class="flex items-center gap-2 px-4 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                @click="showAddForm = true"
+            >
+                <span class="text-base leading-none">+</span> Add Job
+            </button>
             <input
                 v-model="store.searchQuery"
                 type="search"
@@ -39,6 +47,12 @@ onMounted(() => store.fetchJobs())
             </div>
         </div>
     </main>
+
+    <!-- Add job form -->
+    <AddJobForm
+        v-if="showAddForm"
+        @close="showAddForm = false"
+    />
 
     <!-- Job detail modal -->
     <JobDetailModal
