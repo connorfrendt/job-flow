@@ -5,10 +5,12 @@ import { KANBAN_COLUMNS } from '../../utils/constants'
 import KanbanColumn from './KanbanColumn.vue'
 import JobDetailModal from '../jobs/JobDetailModal.vue'
 import AddJobForm from '../jobs/AddJobForm.vue'
+import PasteJobInput from '../jobs/PasteJobInput.vue'
 
 const store = useJobStore()
 const selectedJob = ref(null)
 const showAddForm = ref(false)
+const showPasteForm = ref(false)
 
 onMounted(() => store.fetchJobs())
 </script>
@@ -22,6 +24,12 @@ onMounted(() => store.fetchJobs())
                 @click="showAddForm = true"
             >
                 <span class="text-base leading-none">+</span> Add Job
+            </button>
+            <button
+                class="flex items-center gap-2 px-4 py-1.5 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
+                @click="showPasteForm = true"
+            >
+                ✦ Paste &amp; Parse
             </button>
             <input
                 v-model="store.searchQuery"
@@ -52,6 +60,12 @@ onMounted(() => store.fetchJobs())
     <AddJobForm
         v-if="showAddForm"
         @close="showAddForm = false"
+    />
+
+    <!-- Paste & parse form -->
+    <PasteJobInput
+        v-if="showPasteForm"
+        @close="showPasteForm = false"
     />
 
     <!-- Job detail modal -->
