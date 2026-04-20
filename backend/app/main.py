@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import jobs
-from .models import job, profile  # noqa: F401 — registers models with Base.metadata
+from .routers import jobs, profile
+from .models import job, profile as profile_model  # noqa: F401 — registers models with Base.metadata
 
 app = FastAPI(title="Job-Flow API", version="0.1.0")
 
@@ -15,6 +15,7 @@ app.add_middleware(
 )
 
 app.include_router(jobs.router)
+app.include_router(profile.router)
 
 
 @app.get("/health")
