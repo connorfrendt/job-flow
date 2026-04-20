@@ -1,20 +1,39 @@
 <script setup>
+import { onMounted } from 'vue'
 import { useJobStore } from '../../stores/jobStore'
 import { KANBAN_COLUMNS } from '../../utils/constants'
 import KanbanColumn from './KanbanColumn.vue'
 
 const store = useJobStore()
+
+onMounted(() => store.fetchJobs())
 </script>
 
 <template>
-    <main class="p-6 overflow-x-auto">
-        <div class="flex gap-4" style="min-width: max-content;">
-            <KanbanColumn
-                v-for="col in KANBAN_COLUMNS"
-                :key="col.key"
-                :column="col"
-                :jobs="store.jobsByStatus[col.key] || []"
+    <main class="p-6 flex flex-col gap-4">
+        <!-- Toolbar -->
+        <div class="flex items-center gap-4">
+            <input
+                v-model="store.searchQuery"
+                type="search"
+                placeholder="Search jobs..."
+                class="w-64 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
+            <span v-if="store.loading" class="text-sm text-gray-400">Loading…</span>
+            <span v-if="store.error" class="text-sm text-red-500">{{ store.error }}</span>
+        </div>
+
+        <!-- Board -->
+        <div class="overflow-x-auto pb-4">
+            <div class="flex gap-4" style="min-width: max-content;">
+                <KanbanColumn
+                    v-for="col in KANBAN_COLUMNS"
+                    :key="col.key"
+                    :column="col"
+                    :jobs="store.jobsByStatus[col.key] || []"
+                    @drop-job="store.updateStatus($event, col.key)"
+                />
+            </div>
         </div>
     </main>
 </template>

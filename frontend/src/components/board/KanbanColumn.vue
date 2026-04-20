@@ -1,10 +1,34 @@
 <script setup>
+import { ref } from 'vue'
 import JobCard from './JobCard.vue'
 
 defineProps({
     column: { type: Object, required: true },
     jobs:   { type: Array,  required: true },
 })
+
+const emit = defineEmits(['drop-job'])
+
+const isDragOver = ref(false)
+
+function onDragOver(e) {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    isDragOver.value = true
+}
+
+function onDragLeave(e) {
+    // Only clear when leaving the column container itself, not a child card
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+        isDragOver.value = false
+    }
+}
+
+function onDrop(e) {
+    isDragOver.value = false
+    const id = e.dataTransfer.getData('text/plain')
+    if (id) emit('drop-job', id)
+}
 </script>
 
 <template>
@@ -19,8 +43,14 @@ defineProps({
             </span>
         </div>
 
-        <!-- Cards -->
-        <div class="bg-gray-200 rounded-xl p-2 flex flex-col gap-2 min-h-24">
+        <!-- Drop zone -->
+        <div
+            class="rounded-xl p-2 flex flex-col gap-2 min-h-24 transition-colors duration-150"
+            :class="isDragOver ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-200'"
+            @dragover="onDragOver"
+            @dragleave="onDragLeave"
+            @drop="onDrop"
+        >
             <JobCard
                 v-for="job in jobs"
                 :key="job.id"

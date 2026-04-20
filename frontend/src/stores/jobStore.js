@@ -1,100 +1,67 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
+import api from '../services/api'
 
 export const useJobStore = defineStore('jobs', () => {
-    const jobs = ref([
-        {
-            id: '1',
-            title: 'Data Engineer',
-            company: 'TechCorp',
-            location: 'Remote',
-            salary_min: 130000,
-            salary_max: 160000,
-            status: 'new_leads',
-            starred: false,
-            source: 'manual',
-        },
-        {
-            id: '2',
-            title: 'ETL Developer',
-            company: 'DataFlow Inc',
-            location: 'Austin, TX',
-            salary_min: 110000,
-            salary_max: 130000,
-            status: 'new_leads',
-            starred: false,
-            source: 'manual',
-        },
-        {
-            id: '3',
-            title: 'Data Pipeline Engineer',
-            company: 'CloudBase',
-            location: 'Remote',
-            salary_min: 120000,
-            salary_max: 145000,
-            status: 'saved',
-            starred: true,
-            source: 'manual',
-        },
-        {
-            id: '4',
-            title: 'Senior Data Engineer',
-            company: 'Fintech Co',
-            location: 'New York, NY',
-            salary_min: 140000,
-            salary_max: 170000,
-            status: 'applied',
-            starred: true,
-            source: 'manual',
-        },
-        {
-            id: '5',
-            title: 'Analytics Engineer',
-            company: 'RetailCo',
-            location: 'Chicago, IL',
-            salary_min: 115000,
-            salary_max: 135000,
-            status: 'phone_screen',
-            starred: false,
-            source: 'manual',
-        },
-        {
-            id: '6',
-            title: 'Data Engineer II',
-            company: 'HealthTech',
-            location: 'Remote',
-            salary_min: 125000,
-            salary_max: 150000,
-            status: 'interview',
-            starred: true,
-            source: 'manual',
-        },
-        {
-            id: '7',
-            title: 'Junior Data Engineer',
-            company: 'StartupXYZ',
-            location: 'Remote',
-            salary_min: 90000,
-            salary_max: 110000,
-            status: 'rejected',
-            starred: false,
-            source: 'manual',
-        },
-    ])
+    const jobs = ref([])
+    const loading = ref(false)
+    const error = ref(null)
+    const searchQuery = ref('')
 
-    // Group jobs by status for the Kanban columns
+    // Filter client-side so search doesn't require a round-trip per keystroke
     const jobsByStatus = computed(() => {
-        return jobs.value.reduce((acc, job) => {
+        const query = searchQuery.value.toLowerCase()
+        const visible = query
+            ? jobs.value.filter(j =>
+                j.title?.toLowerCase().includes(query) ||
+                j.company?.toLowerCase().includes(query) ||
+                j.location?.toLowerCase().includes(query)
+            )
+            : jobs.value
+
+        return visible.reduce((acc, job) => {
             if (!acc[job.status]) acc[job.status] = []
             acc[job.status].push(job)
             return acc
         }, {})
     })
 
-    function toggleStar(id) {
-        const job = jobs.value.find(j => j.id === id)
-        if (job) job.starred = !job.starred
+    async function fetchJobs() {
+        loading.value = true
+        error.value = null
+        try {
+            const { data } = await api.get('/jobs')
+            jobs.value = data
+        } catch {
+            error.value = 'Failed to load jobs.'
+        } finally {
+            loading.value = false
+        }
     }
 
-    return { jobs, jobsByStatus, toggleStar }
+    async function updateStatus(id, status) {
+        const job = jobs.value.find(j => j.id === id)
+        if (!job || job.status === status) return
+        const previous = job.status
+        job.status = status  // optimistic update
+        try {
+            await api.patch(`/jobs/${id}/status`, { status })
+        } catch {
+            job.status = previous  // revert on failure
+        }
+    }
+
+    async function toggleStar(id) {
+        const job = jobs.value.find(j => j.id === id)
+        if (!job) return
+        const newValue = !job.starred
+        job.starred = newValue  // optimistic update
+        try {
+            await api.patch(`/jobs/${id}/star`, { starred: newValue })
+        } catch {
+            job.starred = !newValue  // revert on failure
+        }
+    }
+
+    return { jobs, loading, error, searchQuery, jobsByStatus, fetchJobs, updateStatus, toggleStar }
 })

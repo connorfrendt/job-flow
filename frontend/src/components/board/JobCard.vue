@@ -6,7 +6,7 @@ const props = defineProps({
     job: { type: Object, required: true },
 })
 
-// Emitted in Step 6 to open the detail modal
+// Wired to open the detail modal in Step 6
 const emit = defineEmits(['select'])
 
 const store = useJobStore()
@@ -19,6 +19,11 @@ const salaryDisplay = computed(() => {
     return null
 })
 
+function onDragStart(e) {
+    e.dataTransfer.setData('text/plain', props.job.id)
+    e.dataTransfer.effectAllowed = 'move'
+}
+
 function toggleStar(e) {
     e.stopPropagation()
     store.toggleStar(props.job.id)
@@ -27,7 +32,9 @@ function toggleStar(e) {
 
 <template>
     <div
-        class="bg-white rounded-lg p-3 shadow-sm cursor-pointer hover:shadow-md transition-shadow select-none"
+        draggable="true"
+        class="bg-white rounded-lg p-3 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow select-none"
+        @dragstart="onDragStart"
         @click="emit('select', job)"
     >
         <div class="flex items-start justify-between gap-2">
