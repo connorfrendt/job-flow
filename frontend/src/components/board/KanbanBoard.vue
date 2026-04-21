@@ -8,9 +8,24 @@ import AddJobForm from '../jobs/AddJobForm.vue'
 import PasteJobInput from '../jobs/PasteJobInput.vue'
 
 const store = useJobStore()
-const selectedJob = ref(null)
-const showAddForm = ref(false)
+const selectedJob  = ref(null)
+const showAddForm  = ref(false)
 const showPasteForm = ref(false)
+const selectedIds  = ref(new Set())
+
+function toggleSelect(id) {
+    const next = new Set(selectedIds.value)
+    if (next.has(id)) next.delete(id)
+    else next.add(id)
+    selectedIds.value = next
+}
+
+async function bulkDelete() {
+    const count = selectedIds.value.size
+    if (!confirm(`Delete ${count} job${count === 1 ? '' : 's'}? This cannot be undone.`)) return
+    await store.deleteJobs([...selectedIds.value])
+    selectedIds.value = new Set()
+}
 
 onMounted(() => store.fetchJobs())
 </script>
@@ -39,6 +54,23 @@ onMounted(() => store.fetchJobs())
             />
             <span v-if="store.loading" class="text-sm text-gray-400">Loading…</span>
             <span v-if="store.error" class="text-sm text-red-500">{{ store.error }}</span>
+
+            <!-- Bulk delete -->
+            <div v-if="selectedIds.size > 0" class="flex items-center gap-2 ml-auto">
+                <span class="text-sm text-gray-500">{{ selectedIds.size }} selected</span>
+                <button
+                    class="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium"
+                    @click="bulkDelete"
+                >
+                    🗑 Delete
+                </button>
+                <button
+                    class="text-sm text-gray-400 hover:text-gray-600"
+                    @click="selectedIds = new Set()"
+                >
+                    Cancel
+                </button>
+            </div>
         </div>
 
         <!-- Board -->
@@ -49,8 +81,10 @@ onMounted(() => store.fetchJobs())
                     :key="col.key"
                     :column="col"
                     :jobs="store.jobsByStatus[col.key] || []"
+                    :selected-ids="selectedIds"
                     @drop-job="store.updateStatus($event, col.key)"
                     @select-job="selectedJob = $event"
+                    @toggle-select="toggleSelect"
                 />
             </div>
         </div>

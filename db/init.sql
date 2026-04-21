@@ -41,6 +41,17 @@ CREATE INDEX idx_jobs_starred ON jobs(starred);
 CREATE INDEX idx_jobs_adzuna_id ON jobs(adzuna_id);
 CREATE INDEX idx_jobs_description_hash ON jobs(description_hash);
 
+CREATE TABLE ingest_config (
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    keywords         VARCHAR(255) NOT NULL,
+    location         VARCHAR(255),
+    country          VARCHAR(10) DEFAULT 'us',
+    max_pages        INTEGER DEFAULT 2,
+    results_per_page INTEGER DEFAULT 50,
+    created_at       TIMESTAMP DEFAULT NOW(),
+    updated_at       TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE profile (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     skills          JSONB,

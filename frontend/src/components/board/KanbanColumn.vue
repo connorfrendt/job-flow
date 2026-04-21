@@ -3,11 +3,12 @@ import { ref } from 'vue'
 import JobCard from './JobCard.vue'
 
 defineProps({
-    column: { type: Object, required: true },
-    jobs:   { type: Array,  required: true },
+    column:      { type: Object, required: true },
+    jobs:        { type: Array,  required: true },
+    selectedIds: { type: Set,    default: () => new Set() },
 })
 
-const emit = defineEmits(['drop-job', 'select-job'])
+const emit = defineEmits(['drop-job', 'select-job', 'toggle-select'])
 
 const isDragOver = ref(false)
 
@@ -55,7 +56,9 @@ function onDrop(e) {
                 v-for="job in jobs"
                 :key="job.id"
                 :job="job"
+                :is-selected="selectedIds.has(job.id)"
                 @select="emit('select-job', $event)"
+                @toggle-select="emit('toggle-select', $event)"
             />
             <p v-if="jobs.length === 0" class="text-xs text-gray-400 text-center py-4">
                 No jobs here

@@ -18,6 +18,13 @@
                     >
                         Profile
                     </RouterLink>
+                    <RouterLink
+                        to="/ingest"
+                        class="text-gray-500 hover:text-blue-600 transition-colors"
+                        active-class="text-blue-600"
+                    >
+                        Ingest
+                    </RouterLink>
                 </nav>
             </div>
         </header>

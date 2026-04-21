@@ -3,10 +3,11 @@ import { computed } from 'vue'
 import { useJobStore } from '../../stores/jobStore'
 
 const props = defineProps({
-    job: { type: Object, required: true },
+    job:        { type: Object,  required: true },
+    isSelected: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'toggle-select'])
 
 const store = useJobStore()
 
@@ -44,16 +45,30 @@ function toggleStar(e) {
 <template>
     <div
         draggable="true"
-        class="bg-white rounded-lg p-3 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow select-none relative overflow-hidden"
-        :class="hasScore ? 'pb-8' : ''"
+        class="bg-white rounded-lg p-3 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow select-none relative overflow-hidden group"
+        :class="[hasScore ? 'pb-8' : '', isSelected ? 'ring-2 ring-blue-400' : '']"
         :style="accentColor
             ? { border: `2px solid ${accentColor}` }
             : { border: '1px solid #e5e7eb' }"
         @dragstart="onDragStart"
         @click="emit('select', job)"
     >
+        <!-- Checkbox: always visible when selected, visible on hover otherwise -->
+        <div
+            class="absolute top-2 left-2 z-10"
+            :class="isSelected ? '' : 'opacity-0 group-hover:opacity-100'"
+            @click.stop="emit('toggle-select', job.id)"
+        >
+            <input
+                type="checkbox"
+                :checked="isSelected"
+                class="w-3.5 h-3.5 rounded accent-blue-500 cursor-pointer"
+                @change.stop
+            />
+        </div>
+
         <div class="flex items-start justify-between gap-2">
-            <h3 class="text-sm font-medium text-gray-900 leading-tight">{{ job.title }}</h3>
+            <h3 class="text-sm font-medium text-gray-900 leading-tight pl-5">{{ job.title }}</h3>
             <button
                 class="flex-shrink-0 text-lg leading-none transition-colors"
                 :class="job.starred ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'"
