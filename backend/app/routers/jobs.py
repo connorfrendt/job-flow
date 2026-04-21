@@ -6,7 +6,10 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models.job import Job
+from ..models.profile import Profile
 from ..schemas.job import JobCreate, JobResponse, JobUpdate, StarUpdate, StatusUpdate
+from ..config import settings
+from ..services.scoring import compute_fit, compute_fit_ai
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 
@@ -46,6 +49,15 @@ async def get_job(job_id: UUID, db: Session = Depends(get_db)):
 @router.post("", response_model=JobResponse, status_code=201)
 async def create_job(payload: JobCreate, db: Session = Depends(get_db)):
     job = Job(**payload.model_dump())
+
+    profile = db.query(Profile).first()
+    if profile:
+        score, reasons = compute_fit(job, profile)
+        if score >= 40 and settings.anthropic_api_key:
+            score, reasons = await compute_fit_ai(job, profile)
+        job.fit_score = score
+        job.fit_reasons = reasons
+
     db.add(job)
     db.commit()
     db.refresh(job)

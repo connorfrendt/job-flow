@@ -102,6 +102,42 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
                 <!-- Form body -->
                 <div class="p-6 flex flex-col gap-4">
 
+                    <!-- Fit score panel -->
+                    <div
+                        v-if="job.fit_score !== null && job.fit_score !== undefined"
+                        class="rounded-lg p-3 flex flex-col gap-2"
+                        :class="{
+                            'bg-green-50 border border-green-100': job.fit_score >= 70,
+                            'bg-yellow-50 border border-yellow-100': job.fit_score >= 40 && job.fit_score < 70,
+                            'bg-red-50 border border-red-100': job.fit_score < 40,
+                        }"
+                    >
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="text-sm font-bold"
+                                :class="{
+                                    'text-green-700': job.fit_score >= 70,
+                                    'text-yellow-700': job.fit_score >= 40 && job.fit_score < 70,
+                                    'text-red-700': job.fit_score < 40,
+                                }"
+                            >
+                                {{ job.fit_score }}% fit
+                            </span>
+                            <span class="text-xs text-gray-400">vs. your profile</span>
+                        </div>
+                        <ul v-if="job.fit_reasons?.length" class="flex flex-col gap-1">
+                            <li
+                                v-for="(r, i) in job.fit_reasons"
+                                :key="i"
+                                class="text-xs flex items-start gap-1.5"
+                                :class="r.type === 'pro' ? 'text-green-700' : 'text-red-600'"
+                            >
+                                <span class="mt-px font-bold">{{ r.type === 'pro' ? '✓' : '✗' }}</span>
+                                <span>{{ r.text }}</span>
+                            </li>
+                        </ul>
+                    </div>
+
                     <!-- Title -->
                     <div>
                         <label class="block text-xs font-medium text-gray-500 mb-1">Title *</label>

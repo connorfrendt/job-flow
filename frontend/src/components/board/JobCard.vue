@@ -52,8 +52,21 @@ function toggleStar(e) {
         <p v-if="job.company" class="text-xs text-gray-500 mt-1">{{ job.company }}</p>
         <p v-if="job.location" class="text-xs text-gray-400">{{ job.location }}</p>
 
-        <p v-if="salaryDisplay" class="text-xs text-green-600 font-medium mt-2">
-            {{ salaryDisplay }}
-        </p>
+        <div class="flex items-center justify-between mt-2">
+            <p v-if="salaryDisplay" class="text-xs text-green-600 font-medium">
+                {{ salaryDisplay }}
+            </p>
+            <span
+                v-if="job.fit_score !== null && job.fit_score !== undefined"
+                class="text-xs font-semibold px-1.5 py-0.5 rounded ml-auto"
+                :class="{
+                    'bg-green-100 text-green-700': job.fit_score >= 70,
+                    'bg-yellow-100 text-yellow-700': job.fit_score >= 40 && job.fit_score < 70,
+                    'bg-red-100 text-red-700': job.fit_score < 40,
+                }"
+            >
+                {{ job.fit_score }}% fit
+            </span>
+        </div>
     </div>
 </template>
