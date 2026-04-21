@@ -52,6 +52,14 @@ onMounted(() => store.fetchJobs())
                 placeholder="Search jobs..."
                 class="w-64 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
+            <button
+                :class="store.remoteOnly
+                    ? 'px-3 py-1.5 text-sm rounded-lg font-medium bg-teal-600 text-white hover:bg-teal-700'
+                    : 'px-3 py-1.5 text-sm rounded-lg font-medium bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'"
+                @click="store.remoteOnly = !store.remoteOnly"
+            >
+                Remote only
+            </button>
             <span v-if="store.loading" class="text-sm text-gray-400">Loading…</span>
             <span v-if="store.error" class="text-sm text-red-500">{{ store.error }}</span>
 

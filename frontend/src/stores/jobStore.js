@@ -7,17 +7,26 @@ export const useJobStore = defineStore('jobs', () => {
     const loading = ref(false)
     const error = ref(null)
     const searchQuery = ref('')
+    const remoteOnly = ref(false)
 
     // Filter client-side so search doesn't require a round-trip per keystroke
     const jobsByStatus = computed(() => {
         const query = searchQuery.value.toLowerCase()
-        const visible = query
+        let visible = query
             ? jobs.value.filter(j =>
                 j.title?.toLowerCase().includes(query) ||
                 j.company?.toLowerCase().includes(query) ||
                 j.location?.toLowerCase().includes(query)
             )
             : jobs.value
+
+        if (remoteOnly.value) {
+            visible = visible.filter(j =>
+                j.location?.toLowerCase().includes('remote') ||
+                j.title?.toLowerCase().includes('remote') ||
+                j.description?.toLowerCase().includes('remote')
+            )
+        }
 
         return visible.reduce((acc, job) => {
             if (!acc[job.status]) acc[job.status] = []
@@ -84,5 +93,5 @@ export const useJobStore = defineStore('jobs', () => {
         }
     }
 
-    return { jobs, loading, error, searchQuery, jobsByStatus, fetchJobs, createJob, updateJob, deleteJob, deleteJobs, updateStatus, toggleStar }
+    return { jobs, loading, error, searchQuery, remoteOnly, jobsByStatus, fetchJobs, createJob, updateJob, deleteJob, deleteJobs, updateStatus, toggleStar }
 })
